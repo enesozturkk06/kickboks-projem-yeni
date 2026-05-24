@@ -418,8 +418,25 @@ function NotifProvider({ children }) {
 // MAIN APP
 // ============================================================
 export default function App() {
-  const [students, setStudents] = useState(INITIAL_STUDENTS);
-  const [slots, setSlots] = useState(INITIAL_SLOTS);
+  // 1. Öğrencileri ve Slotları Hafızadan Okuma
+  const [students, setStudents] = useState(() => {
+    const saved = localStorage.getItem('kickboks_students');
+    return saved ? JSON.parse(saved) : INITIAL_STUDENTS;
+  });
+
+  const [slots, setSlots] = useState(() => {
+    const saved = localStorage.getItem('kickboks_slots');
+    return saved ? JSON.parse(saved) : INITIAL_SLOTS;
+  });
+
+  // 2. Veri Değiştiğinde Otomatik Kaydetme
+  useEffect(() => {
+    localStorage.setItem('kickboks_students', JSON.stringify(students));
+  }, [students]);
+
+  useEffect(() => {
+    localStorage.setItem('kickboks_slots', JSON.stringify(slots));
+  }, [slots]);
   const [view, setView] = useState("login"); // login | trainer | student
   const [trainerLoggedIn, setTrainerLoggedIn] = useState(false);
   const [studentCode, setStudentCode] = useState("");
