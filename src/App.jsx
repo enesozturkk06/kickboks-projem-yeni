@@ -1,10 +1,26 @@
 import { useState, useEffect, useCallback } from "react";
+import { createClient } from '@supabase/supabase-js';
 
+// URL'in ve anahtarın buraya gelecek
+// URL ve Anahtar kısmını tam olarak şöyle yap:
+const supabaseUrl = 'https://xkyasufecnbnqybapphr.supabase.co';
+const supabaseKey = 'sb_publishable_bhaRJI_kRi3X6jKOlFoMNg_whOd4xWt';
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
 // ============================================================
 // INITIAL DATA
 // ============================================================
 const TRAINER_PASSWORD = "Enes2024";
-
+const [students, setStudents] = useState([]);
+useEffect(() => {
+  const fetchStudents = async () => {
+    const { data } = await supabase.from('students').select('*');
+    if (data && data.length > 0) {
+      setStudents(data); // Eğer veritabanında veri varsa onu göster
+    }
+  };
+  fetchStudents();
+}, []);
 const INITIAL_STUDENTS = [
   {
     id: 1, code: "ENES001", name: "Ahmet Yılmaz", phone: "0532 111 2233",
@@ -418,25 +434,18 @@ function NotifProvider({ children }) {
 // MAIN APP
 // ============================================================
 export default function App() {
-  // 1. Öğrencileri ve Slotları Hafızadan Okuma
-  const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('kickboks_students');
-    return saved ? JSON.parse(saved) : INITIAL_STUDENTS;
-  });
-
-  const [slots, setSlots] = useState(() => {
-    const saved = localStorage.getItem('kickboks_slots');
-    return saved ? JSON.parse(saved) : INITIAL_SLOTS;
-  });
-
-  // 2. Veri Değiştiğinde Otomatik Kaydetme
-  useEffect(() => {
-    localStorage.setItem('kickboks_students', JSON.stringify(students));
-  }, [students]);
+const [students, setStudents] = useState([]);
+  const [slots, setSlots] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('kickboks_slots', JSON.stringify(slots));
-  }, [slots]);
+    const fetchData = async () => {
+      const { data: sData } = await supabase.from('students').select('*');
+      const { data: slData } = await supabase.from('slots').select('*');
+      if (sData) setStudents(sData);
+      if (slData) setSlots(slData);
+    };
+    fetchData();
+  }, []);
   const [view, setView] = useState("login"); // login | trainer | student
   const [trainerLoggedIn, setTrainerLoggedIn] = useState(false);
   const [studentCode, setStudentCode] = useState("");
