@@ -446,19 +446,6 @@ const [students, setStudents] = useState([]);
     };
     fetchData();
   }, []);
-  const [view, setView] = useState("login"); // login | trainer | student
-  const [trainerLoggedIn, setTrainerLoggedIn] = useState(false);
-  const [studentCode, setStudentCode] = useState("");
-  const [currentStudent, setCurrentStudent] = useState(null);
-  const [notifs, setNotifs] = useState([]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const addNotif = useCallback((title, body, type = "red") => {
-    const id = Date.now();
-    setNotifs(n => [...n, { id, title, body, type }]);
-    setTimeout(() => setNotifs(n => n.filter(x => x.id !== id)), 4500);
-  }, []);
-
   const studentLogin = (code) => {
     const s = students.find(x => x.code === code.trim().toUpperCase());
     if (s) {
